@@ -7,10 +7,31 @@ const app = express();
 //     res.send({ firstName: "Harikrushna", lastName: "DDS" })
 // });
 
-app.get("/user", (req, res) => {    //?userId=101&name=Harikrushna
+app.get("/user", (req, res, next) => {    //?userId=101&name=Harikrushna
     console.log(req.query);
-    res.send({ firstName: "Harikrushna", lastName: "DDS" })
-});
+    next();
+    // res.send({ firstName: "Harikrushna", lastName: "DDS" })
+},
+    (req, res, next) => {
+        console.log("Middleware 1");
+        // res.send("Middleware 1");
+        next();
+    },
+    (req, res, next) => {
+        console.log("Middleware 2");
+        // res.send("Middleware 2");
+        next();
+    },
+    (req, res, next) => {
+        console.log("Middleware 3");
+        // res.send("Middleware 3");
+        next();
+    },
+    (req, res) => {
+        console.log("Middleware 4");
+        res.send("Middleware 4");
+    }
+);
 
 app.post("/user", (req, res) => {
     res.send("User created successfully");
