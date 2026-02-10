@@ -6,15 +6,31 @@ const app = express();
 app.use("/user", userAuth);
 
 app.get("/user", (req, res) => {
-    res.send({ firstName: "User", lastName: "DDS" })
+    try {
+        res.send({ firstName: "User", lastName: "DDS" })
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Internal server error");
+    }
 });
 
 app.post("/user", (req, res) => {
-    res.send("User created successfully");
+    try {
+        res.send("User created successfully");
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Internal server error!!!");
+    }
 })
 
 app.get("/admin", adminAuth, (req, res) => {
-    res.send({ firstName: "Admin", lastName: "DDS" })
+    try {
+        throw new Error("Something went wrong");
+        res.send({ firstName: "Admin", lastName: "DDS" })
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Internal server error!!!!");
+    }
 });
 
 
