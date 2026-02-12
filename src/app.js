@@ -47,6 +47,22 @@ app.get("/users", async (req, res) => {
     }
 });
 
+app.patch("/user/:id", async (req, res) => {
+    const updatedUserData = req.body;
+    const userId = req.params.id;
+
+    try {
+        const user = await User.findByIdAndUpdate(userId, updatedUserData);
+        if (!user) {
+            res.status(400).json({ message: "User not found" });
+        } else {
+            res.status(200).json({ message: "User updated successfully" })
+        }
+    } catch (err) {
+        res.status(400).json({ message: "Failed to update user", err })
+    }
+})
+
 app.delete("/user", async (req, res) => {
     try {
         const user = await User.findByIdAndDelete(req.body.userId);
