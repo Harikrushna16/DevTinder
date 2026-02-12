@@ -47,6 +47,19 @@ app.get("/users", async (req, res) => {
     }
 });
 
+app.delete("/user", async (req, res) => {
+    try {
+        const user = await User.findByIdAndDelete(req.body.userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        } else {
+            return res.status(200).json(`User ${user.firstName} deleted successfully`);
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Failed to delete user", error });
+    }
+});
+
 connectDB()
     .then(() => {
         console.log("MongoDB connected");
