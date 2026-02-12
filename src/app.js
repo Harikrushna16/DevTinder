@@ -16,6 +16,37 @@ app.post("/signup", async (req, res) => {
     }
 });
 
+app.get("/user/:id", async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ message: "Failed to fetch user", error });
+    }
+});
+
+app.get("/user", async (req, res) => {
+    try {
+        const user = await User.find({ email: req.body.email });
+        if (user.length === 0) {
+            return res.status(404).json({ message: "User not found" });
+        } else {
+            return res.status(200).json(user);
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Failed to fetch user", error });
+    }
+})
+
+app.get("/users", async (req, res) => {
+    try {
+        const users = await User.find({});
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500).json({ message: "Failed to fetch users", error });
+    }
+});
+
 connectDB()
     .then(() => {
         console.log("MongoDB connected");
