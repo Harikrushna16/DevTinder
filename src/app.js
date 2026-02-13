@@ -52,6 +52,11 @@ app.patch("/user/:id", async (req, res) => {
     const userId = req.params.id;
 
     try {
+        const allowedUpdates = ["firstName", "lastName", "password", "age", "bio", "skills", "profilePicture"];
+        const isValidOperation = Object.keys(updatedUserData).every((update) => allowedUpdates.includes(update));
+        if (!isValidOperation) {
+            return res.status(400).json({ message: "Invalid update" });
+        }
         const user = await User.findByIdAndUpdate(userId, updatedUserData, { returnDocument: "after", runValidators: true });
         if (!user) {
             res.status(400).json({ message: "User not found" });

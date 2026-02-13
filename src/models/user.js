@@ -1,3 +1,4 @@
+const validator = require("validator");
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
@@ -15,12 +16,19 @@ const userSchema = new mongoose.Schema({
         unique: true,
         lowercase: true,
         trim: true,
+        validate: {
+            validator: validator.isEmail,
+            message: "Please provide a valid email"
+        }
     },
     password: {
         type: String,
         required: true,
         minLength: 8,
-        match: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+        validate: {
+            validator: validator.isStrongPassword,
+            message: "Please provide a strong password"
+        }
     },
     age: {
         type: Number,
@@ -38,12 +46,22 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: "This is a default Bio of users",
     },
-    interests: {
-        type: Array,
+    skills: {
+        type: [String],
+        validate: {
+            validator: function (value) {
+                return value.length <= 4;
+            },
+            message: "You can add maximum 4 skills only."
+        }
     },
     profilePicture: {
         type: String,
         default: "https://www.vhv.rs/viewpic/ioJThwo_men-profile-icon-png-image-free-download-searchpng/",
+        validate: {
+            validator: validator.isURL,
+            message: "Please provide a valid URL"
+        }
     },
 },
     {
