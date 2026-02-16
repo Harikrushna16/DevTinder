@@ -5,9 +5,13 @@ const User = require("./models/user");
 const { validateSignUpData } = require("./utils/validation");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+const { userAuth } = require("./middleware/auth");
 
 // middleware to parse json
 app.use(express.json());
+app.use(cookieParser());
 
 app.post("/signup", async (req, res) => {
     try {
@@ -41,6 +45,8 @@ app.post("/login", async (req, res) => {
         }
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (isPasswordValid) {
+            const token = jwt.sign({ id: user._id }, "Dev@Tinder$16", { expiresIn: "1h" });
+            res.cookie("token", token);
             res.status(200).json({ message: "User logged in successfully" });
         } else {
             res.status(400).json({ message: "Invalid credentials" });
@@ -49,6 +55,14 @@ app.post("/login", async (req, res) => {
         res.status(400).json({ message: "Login failed", error });
     }
 });
+
+app.get("/profile", userAuth, async (req, res) => {
+    try {
+        res.status(200).json({ message: "User profile", user: req.user });
+    } catch (error) {
+        res.status(400).json({ message: "Failed to fetch user profile", error });
+    }
+})
 
 app.get("/user/:id", async (req, res) => {
     try {
