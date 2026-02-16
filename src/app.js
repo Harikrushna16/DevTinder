@@ -6,7 +6,6 @@ const { validateSignUpData } = require("./utils/validation");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
 const cookieParser = require("cookie-parser");
-const jwt = require("jsonwebtoken");
 const { userAuth } = require("./middleware/auth");
 
 // middleware to parse json
@@ -20,10 +19,10 @@ app.post("/signup", async (req, res) => {
             return res.status(400).json({ message: validationResult.message });
         }
 
-        const { firstName, lastName, email, password } = req.body;
+        const { firstName, lastName, email, password, bio, age, gender, skills, profilePicture } = req.body;
 
         const passwordHash = await bcrypt.hash(password, 10);
-        const user = new User({ firstName, lastName, email, password: passwordHash });
+        const user = new User({ firstName, lastName, email, password: passwordHash, bio, age, gender, skills, profilePicture });
 
         await user.save();
         res.status(201).json({ message: "User registered successfully" });
@@ -43,10 +42,15 @@ app.post("/login", async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        const isPasswordValid = await user.comparePassword(password);
         if (isPasswordValid) {
-            const token = jwt.sign({ id: user._id }, "Dev@Tinder$16", { expiresIn: "1h" });
-            res.cookie("token", token);
+            const token = user.generateToken();
+            res.cookie("token", token, {
+                httpOnly: true,
+                secure: true,
+                sameSite: "strict",
+                expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            });
             res.status(200).json({ message: "User logged in successfully" });
         } else {
             res.status(400).json({ message: "Invalid credentials" });
