@@ -4,7 +4,7 @@ const { userAuth } = require("../middleware/auth");
 const User = require("../models/user");
 const RequestConnection = require("../models/requestConnnection");
 
-requestRouter.post("/:status/:id", userAuth, async (req, res) => {
+requestRouter.post("/send/:status/:id", userAuth, async (req, res) => {
     try {
         const { status, id } = req.params;
         const fromUserId = req.user._id;
@@ -38,5 +38,31 @@ requestRouter.post("/:status/:id", userAuth, async (req, res) => {
         res.status(400).json({ message: error.message || "Failed to send request" });
     }
 });
+
+requestRouter.post("/review/:status/:id", userAuth, async (req, res) => {
+    try {
+        const allowedStatus = ["accepted", "rejected"];
+        const { status, id } = req.params;
+        const fromUserId = req.user._id;
+
+        if (!allowedStatus.includes(status)) {
+            return res.status(400).json({ message: "invalid status type" });
+        }
+
+        const connectionRequest = await RequestConnection.findOne({
+            fromUserId: id,
+            toUserId: fromUserId,
+            status: "interested"
+        });
+        if (!connectionRequest) {
+            return res.status(404).json({ message: "connection request not found" });
+        }
+        connectionRequest.status = status;
+        await connectionRequest.save();
+        return res.status(200).json({ message: "request reviewed successfully", connectionRequest });
+    } catch (err) {
+        res.status(400).json({ message: err.message || "Failed to review request" });
+    }
+})
 
 module.exports = requestRouter;
