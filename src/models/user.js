@@ -60,7 +60,7 @@ const userSchema = new mongoose.Schema({
     },
     profilePicture: {
         type: String,
-        default: "https://www.vhv.rs/viewpic/ioJThwo_men-profile-icon-png-image-free-download-searchpng/",
+        default: "https://www.vhv.rs/dpng/d/256-2569650_men-profile-icon-png-image-free-download-searchpng.png",
         validate: {
             validator: validator.isURL,
             message: "Please provide a valid URL"
