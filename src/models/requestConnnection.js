@@ -13,11 +13,22 @@ const requestConnectionSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["ignored", "interested"],
+        enum: {
+            values: ["ignored", "interested", "accepted", "rejected"],
+            message: "{VALUE} is not a valid status",
+        },
         required: true,
     },
 }, {
     timestamps: true,
+});
+
+requestConnectionSchema.index({ fromUserId: 1, toUserId: 1 }, { unique: true });
+
+requestConnectionSchema.pre("save", function () {
+    if (this.fromUserId.equals(this.toUserId)) {
+        throw new Error("You cannot send request to yourself");
+    }
 });
 
 const RequestConnection = mongoose.model("RequestConnection", requestConnectionSchema);

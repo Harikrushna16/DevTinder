@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 const userSchema = new mongoose.Schema({
     firstName: {
         type: String,
+        index: true,
         required: true,
     },
     lastName: {
@@ -70,6 +71,8 @@ const userSchema = new mongoose.Schema({
         timestamps: true,
     }
 );
+
+userSchema.index({ firstName: 1, lastName: 1 });
 
 userSchema.methods.generateToken = function () {
     return jwt.sign({ id: this._id }, "Dev@Tinder$16", { expiresIn: "7d" });
