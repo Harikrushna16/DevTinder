@@ -52,7 +52,6 @@ userRouter.get("/connections", userAuth, async (req, res) => {
 
 userRouter.get("/feed", userAuth, async (req, res) => {
     try {
-
         const loggedInUser = req.user;
         const connection = await RequestConnection.find({
             $or: [{ fromUserId: loggedInUser._id }, { toUserId: loggedInUser._id }]
