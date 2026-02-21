@@ -24,7 +24,7 @@ const validateUpdateProfileData = (req) => {
     if (age !== undefined && !validator.isInt(String(age))) {
         return { isValid: false, message: "Age must be a number" };
     }
-    if (gender !== undefined && !validator.isLength(gender, { min: 1, max: 1 })) {
+    if (gender !== undefined && !validator.isLength(gender, { min: 3, max: 10 })) {
         return { isValid: false, message: "Gender must be a single character" };
     }
     if (bio !== undefined && !validator.isLength(bio, { min: 10, max: 200 })) {
