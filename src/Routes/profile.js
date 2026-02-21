@@ -5,9 +5,9 @@ const { validateUpdateProfileData } = require("../utils/validation");
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 
-profileRouter.get("/view", userAuth, async (req, res) => {
+profileRouter.get("/", userAuth, async (req, res) => {
     try {
-        res.status(200).json({ message: "User profile", user: req.user });
+        res.status(200).json({ message: "User profile", data: req.user });
     } catch (error) {
         res.status(400).json({ message: "Failed to fetch user profile", error });
     }
